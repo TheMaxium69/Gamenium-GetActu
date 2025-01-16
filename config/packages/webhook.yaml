@@ -1,0 +1,6 @@
+framework:
+  webhook:
+    routing:
+      youtube:
+        service: App\Webhook\YoutubeRequestParser
+        secret: '%youtube_secret%'

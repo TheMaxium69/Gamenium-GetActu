@@ -1,0 +1,10 @@
+controllers:
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute
+    
+youtube_webhook:
+    path: /webhook/youtube
+    controller: Symfony\Component\Webhook\Client\WebhookClient::handleRequest
+    methods: ['GET', 'POST']
