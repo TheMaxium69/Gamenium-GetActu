@@ -16,6 +16,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
  */
 class VideoRepository extends ServiceEntityRepository
 {
+    private string $userId;
 
     public function __construct(ManagerRegistry $registry, private ParameterBagInterface $params)
     {
@@ -43,19 +44,25 @@ class VideoRepository extends ServiceEntityRepository
         // id de la nouvelle picture
         $pictureId = $db->lastInsertId();
 
-        // chercher l'user dans la table user
-        $user = $db->prepare('SELECT `id` FROM `provider` WHERE `display_name` LIKE :channel_name');
-        $searchName = '%'.$channel->getName().'%';
-        $user->execute(['channel_name' => $searchName]);
-        $result = $user->fetch(PDO::FETCH_ASSOC);
-        $userId = $result['id'];
+        // chercher le provider dans la table provider et récupérer l'id
+        $users = $db->prepare('SELECT * FROM `provider`');
+        $users->execute();
+        $result = $users->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($result as $user) {
+            if (str_contains($channel->getName(), $user['display_name'])) {
+                $this->userId = $user['id'];
+                break;
+            }
+        }
+
+        // si no user, on ajoute ???
 
         // prepare sql stmt new post actu
         $stmt = $db->prepare('INSERT INTO post_actu (`provider_id`, `user_id`, `picture_id`, `created_at`, `content`, `title`) VALUES (:providerId, :user, :picture, :creation_date, :content, :title)');
         
         // execute new post actu
         $stmt->execute([
-            'providerId'=> $userId,
+            'providerId'=> $this->userId,
             'user' => 1,
             'picture'=> $pictureId,
             'creation_date'=> 'test',
