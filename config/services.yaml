@@ -6,6 +6,11 @@
 parameters:
     youtube_api_key: '%env(YOUTUBE_API_TOKEN)%'
     youtube_secret: "%env(SECRET)%"
+    webhook_url: "%env(WEBHOOK_URL)%"
+    gamenium_db_host: "%env(GAMENIUM_DB_HOST)%"
+    gamenium_db_name: "%env(GAMENIUM_DB_NAME)%"
+    gamenium_db_user: "%env(GAMENIUM_DB_USER)%"
+    gamenium_db_password: "%env(GAMENIUM_DB_PASSWORD)%"
 services:
     # default configuration for services in *this* file
     _defaults:

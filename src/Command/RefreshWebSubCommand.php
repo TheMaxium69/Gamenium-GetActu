@@ -2,7 +2,6 @@
 
 namespace App\Command;
 
-use App\Entity\Channel;
 use App\Repository\ChannelRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -12,6 +11,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 #[AsCommand(
@@ -22,6 +22,7 @@ class RefreshWebSubCommand extends Command
 {
 
     public function __construct(
+        private ParameterBagInterface $params,
         private EntityManagerInterface $entityManager,
         private HttpClientInterface $client,
         private ChannelRepository $channelRepository
@@ -41,11 +42,12 @@ class RefreshWebSubCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-
+        
         // SCRIPT REFRESH TOKEN 
+        $url = $this->params->get('webhook_url');
         $channels = $this->channelRepository->findAll();
-        // Si sur Ngrok, bien refresh l'url a chaque ouverture de port
-        $webhookUrl = 'https://9c8a-2001-861-8bb4-f960-cc62-51de-8910-880d.ngrok-free.app'."/webhook/youtube";
+        // Si sur Ngrok, bien refresh l'url a chaque ouverture de tunnel dans le env local
+        $webhookUrl = $url."/webhook/youtube";
 
         foreach ($channels as $channel) {
             $channelId = $channel->getChannelId();

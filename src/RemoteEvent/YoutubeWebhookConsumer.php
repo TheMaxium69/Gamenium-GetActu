@@ -5,6 +5,7 @@ namespace App\RemoteEvent;
 use App\Entity\Channel;
 use App\Entity\Video;
 use App\Repository\ChannelRepository;
+use App\Repository\VideoRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\RemoteEvent\Attribute\AsRemoteEventConsumer;
@@ -19,6 +20,7 @@ final class YoutubeWebhookConsumer implements ConsumerInterface
         private ParameterBagInterface $params,
         private EntityManagerInterface $entityManager,
         private ChannelRepository $channelRepository,
+        private VideoRepository $videoRepository,
         private HttpClientInterface $client
     )
     {}
@@ -69,5 +71,7 @@ final class YoutubeWebhookConsumer implements ConsumerInterface
         
         $this->entityManager->persist($video);
         $this->entityManager->flush();
+
+        $this->videoRepository->sendToGameniumApi($video, $channel);
     }
 }
